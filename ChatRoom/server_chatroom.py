@@ -19,7 +19,7 @@ print(f"Server started on {ip_server}:{port_server}")
 clients = []
 nicknames = []
 
-def sendBroadcast(message);
+def sendBroadcast(message):
     for client in clients:
         client.send(message)
 
@@ -36,6 +36,30 @@ def handleClient(client):
             nicknames.remove(nickname)
             sendBroadcast(f"{nickname} left the chat!".encode('utf-8'))
             break
+
+def receiveConnections():
+    while True:
+        client, address = host_server.accept()
+        print(f"Connected with {str(address)}")
+        
+        client.send('NICK'.encode('ascii'))
+        nickname = client.recv(1024).decode('ascii')
+        nicknames.append(nickname)
+        clients.append(client)
+
+        print(f'Nickname of the client is {nickname}')
+        sendBroadcast(f'{nickname} joined the chat!'.encode('ascii'))
+        client.send('Connected to the server!'.encode('ascii'))
+
+        thread = threading.Thread(target=handleClient, args=(client,))
+        thread.start()
+
+
+
+
+
+
+
 
 
            
