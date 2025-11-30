@@ -7,11 +7,12 @@ import socket
 
 
 ip_server = '127.0.0.1'
-port_server = 5555
+port_server = 55555
 
 host_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host_server.bind((ip_server, port_server))
 host_server.listen()
+
 print(f"Server started on {ip_server}:{port_server}")
 
 clients = []
