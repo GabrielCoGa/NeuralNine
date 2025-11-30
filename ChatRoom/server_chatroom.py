@@ -1,6 +1,4 @@
 # Simple Chatroom Server in Python
-#Lista de reproducción de YouTube con tutorial paso a paso:
-#https://youtube.com/playlist?list=PL7yh-TELLS1FwBSNR_tH7qVbNpYHL4IQs&si=cbfE8-E8hmcl3V1C
 #Video específico de este archivo:
 #https://youtu.be/3UOyky9sEQY?si=MhxZaznDBdrA58sq
 
@@ -53,6 +51,10 @@ def receiveConnections():
 
         thread = threading.Thread(target=handleClient, args=(client,))
         thread.start()
+
+print("Server is running and listening for connections...")
+receiveConnections()
+
 
 
 
