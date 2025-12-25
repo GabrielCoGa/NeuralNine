@@ -1,6 +1,6 @@
-# Simple Chatroom Server in Python
+# Advanced Chatroom Server in Python
 #Video específico de este archivo:
-#https://youtu.be/3UOyky9sEQY?si=MhxZaznDBdrA58sq
+#https://www.youtube.com/watch?v=F_JDA96AdEI&t=378s
 
 import threading
 import socket
@@ -42,7 +42,17 @@ def receiveConnections():
         print(f"Connected with {str(address)}")
         
         client.send('NICK'.encode('ascii'))
+
         nickname = client.recv(1024).decode('ascii')
+
+        if nickname == 'admin':
+            client.send('PASS'.encode('ascii'))
+            password = client.recv(1024).decode('ascii')
+            if password != 'adminpass':
+                client.send('REFUSE'.encode('ascii'))
+                client.close()
+                continue
+            
         nicknames.append(nickname)
         clients.append(client)
 

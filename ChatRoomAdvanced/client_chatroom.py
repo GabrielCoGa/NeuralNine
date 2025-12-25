@@ -10,12 +10,17 @@ client_socket.connect((ip_server, port_server))
 
 nickname = input("Choose your nickname: ")
 
+if nickname == 'admin':
+
+
 def receiveMessages():
     while True:
         try:
             message = client_socket.recv(1024).decode('ascii')
             if message == 'NICK':
                 client_socket.send(nickname.encode('ascii'))
+                next_message = client_socket.recv(1024).decode('ascii')
+                
             else:
                 print(message)
         except:
