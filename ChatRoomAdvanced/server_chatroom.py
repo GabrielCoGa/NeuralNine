@@ -25,8 +25,14 @@ def sendBroadcast(message):
 def handleClient(client):
     while True:
         try:
-            message = client.recv(1024)
-            sendBroadcast(message)
+            msg = message = client.recv(1024)
+            if msg.decode('ascii').startswith('KICK'):
+                pass
+            elif msg.decode('ascii').startswith('BAN'):
+                pass
+            else:
+                sendBroadcast(message)
+
         except:
             index = clients.index(client)
             clients.remove(client)
@@ -52,7 +58,7 @@ def receiveConnections():
                 client.send('REFUSE'.encode('ascii'))
                 client.close()
                 continue
-            
+
         nicknames.append(nickname)
         clients.append(client)
 
