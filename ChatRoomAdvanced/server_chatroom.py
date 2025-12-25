@@ -27,9 +27,14 @@ def handleClient(client):
         try:
             msg = message = client.recv(1024)
             if msg.decode('ascii').startswith('KICK'):
-                pass
+                name_to_kick = msg.decode('ascii')[5:]
+                kick_user(name_to_kick)
             elif msg.decode('ascii').startswith('BAN'):
-                pass
+                name_to_ban = msg.decode('ascii')[4:]
+                kick_user(name_to_ban)
+                with open('bans.txt', 'a') as f:
+                    f.write(f'{name_to_ban}\n')
+                print(f'{name_to_ban} was banned!')
             else:
                 sendBroadcast(message)
 
