@@ -27,14 +27,20 @@ def handleClient(client):
         try:
             msg = message = client.recv(1024)
             if msg.decode('ascii').startswith('KICK'):
-                name_to_kick = msg.decode('ascii')[5:]
-                kick_user(name_to_kick)
+                if nicknames[clients.index(client)] == 'admin':
+                    name_to_kick = msg.decode('ascii')[5:]
+                    kick_user(name_to_kick)
+                else:
+                    client.send('Command refused! You are not the admin!'.encode('ascii'))
             elif msg.decode('ascii').startswith('BAN'):
-                name_to_ban = msg.decode('ascii')[4:]
-                kick_user(name_to_ban)
-                with open('bans.txt', 'a') as f:
-                    f.write(f'{name_to_ban}\n')
-                print(f'{name_to_ban} was banned!')
+                if nicknames[clients.index(client)] == 'admin':
+                    name_to_ban = msg.decode('ascii')[4:]
+                    kick_user(name_to_ban)
+                    with open('bans.txt', 'a') as f:
+                        f.write(f'{name_to_ban}\n')
+                    print(f'{name_to_ban} was banned!')
+                else:
+                    client.send('Command refused! You are not the admin!'.encode('ascii'))
             else:
                 sendBroadcast(message)
 
@@ -56,9 +62,18 @@ def receiveConnections():
 
         nickname = client.recv(1024).decode('ascii')
 
+        with open('bans.txt', 'r') as f:
+            bans = f.readlines()
+
+        if nickname + '\n' in bans:
+            client.send('BAN'.encode('ascii'))
+            client.close()
+            continue 
+
         if nickname == 'admin':
             client.send('PASS'.encode('ascii'))
             password = client.recv(1024).decode('ascii')
+
             if password != 'adminpass':
                 client.send('REFUSE'.encode('ascii'))
                 client.close()
@@ -73,6 +88,16 @@ def receiveConnections():
 
         thread = threading.Thread(target=handleClient, args=(client,))
         thread.start()
+
+def kick_user(name):
+    if name in nicknames:
+        name_index = nicknames.index(name)
+        client_to_kick = clients[name_index]
+        clients.remove(client_to_kick)
+        client_to_kick.send('You were kicked by the admin!'.encode('ascii'))
+        client_to_kick.close()
+        nicknames.remove(name)
+        sendBroadcast(f'{name} was kicked by the admin!'.encode('ascii'))
 
 print("Server is running and listening for connections...")
 receiveConnections()
